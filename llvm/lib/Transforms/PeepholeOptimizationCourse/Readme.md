@@ -49,7 +49,7 @@ The solution must be submitted in a form of pull request to this repository with
 
 ### Deadline
 
-TBD
+06-06-2022 23:59:59
 
 ## Useful links
 
