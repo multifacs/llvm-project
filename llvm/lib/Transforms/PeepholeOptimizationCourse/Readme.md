@@ -33,6 +33,7 @@ Write a pass to obfuscate signed 8-byte addition with following formula:
 a + b -> (39 * ((a $\bigoplus$ b) + 2 * (a $\bigwedge$ b)) + 23) * 151 + 111, where
 
 $\bigoplus$ is logical AND
+
 $\bigwedge$ is XOR
 
 Pass has to be written using both legacy and new pass managers.
