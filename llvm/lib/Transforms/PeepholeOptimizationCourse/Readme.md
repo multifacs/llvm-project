@@ -44,6 +44,7 @@ The solution must be submitted in a form of pull request to this repository with
 
 ### Notes
 
+* In C/C++ there are rules which allow compiler to **promote** integral types before operation is performed: [integral promotion](https://en.cppreference.com/w/cpp/language/implicit_conversion#Integral_promotion) (this is the case for `uint8_t` additions). It means that if you compile your program with byte additions without optimizations (using `-O0` option) you may see resulting IR with `int` additions instead of original ones. Such an IR would not be the subject for a pass which obfuscates only byte additions. To resolve that issue use `-O1` optimization level instead of `-O0`. As a result you would have an IR with original byte additions.
 * Do not forget to check an IR after modification is still valid
 * You can reset/add new remote instead of cloning new repository if you already have llvm's clone on your machine (check [Commands from session](https://github.com/ggladilov/llvm-project/blob/peephole-optimization-course/llvm/lib/Transforms/PeepholeOptimizationCourse/commands.txt)).
 
