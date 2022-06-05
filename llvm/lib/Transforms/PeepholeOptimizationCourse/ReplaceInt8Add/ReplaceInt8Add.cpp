@@ -1,3 +1,5 @@
+#include "llvm/Transforms/PeepholeOptimizationCourse/Func.h"
+
 #include "llvm/Pass.h"
 
 #include "llvm/IR/Function.h"
@@ -44,30 +46,7 @@ struct ReplaceInt8Add : public FunctionPass {
                     continue;
                 }
 
-                IRBuilder<> B(binOp);
-                auto const& lhs = binOp->getOperand(0);
-                auto const& rhs = binOp->getOperand(1);
-                auto const& i8 = binOp->getType();
-
-                Instruction *replacement = BinaryOperator::CreateAdd(
-                    B.CreateMul(
-                        B.CreateMul(
-                            ConstantInt::get(i8, 39),
-                            B.CreateAdd(
-                                B.CreateAnd(lhs, rhs),
-                                B.CreateAdd(
-                                    B.CreateMul(
-                                        ConstantInt::get(i8, 2),
-                                        B.CreateXor(lhs, rhs)
-                                    ),
-                                    ConstantInt::get(i8, 23)
-                                )
-                            )
-                        ),
-                        ConstantInt::get(i8, 151)
-                    ),
-                    ConstantInt::get(i8, 111)
-                );
+                Instruction *replacement = ReplaceInt8Instruction(binOp);
 
                 ReplaceInstWithInst(BB.getInstList(), I, replacement);
                 changed = true;

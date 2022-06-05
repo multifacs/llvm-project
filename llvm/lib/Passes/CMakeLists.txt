@@ -29,4 +29,5 @@ add_llvm_component_library(LLVMPasses
   Instrumentation
   RemoveAddWithZeroNewPassManager
   ReplaceInt8AddNewPassManager
+  Func
   )
