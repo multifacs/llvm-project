@@ -1,4 +1,4 @@
-#include "llvm/Transforms/PeepholeOptimizationCourse/Functions.h"
+#include "llvm/Transforms/PeepholeOptimizationCourse/Int8ReplacePassFunc.h"
 
 #include "llvm/Pass.h"
 
@@ -16,32 +16,29 @@ using namespace llvm;
 
 namespace {
 
-struct ReplaceAdd : public FunctionPass {
+struct Int8ReplacePass : public FunctionPass {
     static char ID;
-    ReplaceAdd() : FunctionPass(ID) {}
+    Int8ReplacePass() : FunctionPass(ID) {}
 
     bool runOnFunction(Function& F) override {
         errs() << "********** PEEPHOLE OPTIMIZATION COURSE **********\n";
-        errs() << "********** REPLACE INT8 ADD **********\n";
+        errs() << "********** REPLACE INT8 ADD OLD MANAGER **********\n";
         errs() << "********** Function: " << F.getName() << '\n';
 
         bool changed = false;
 
         for (BasicBlock& BB : F.getBasicBlockList()) {
             for (auto I = BB.begin(), IE = BB.end(); I != IE; ++I) {
-                auto *binOp = dyn_cast<BinaryOperator>(I);
+                auto *bin_op = dyn_cast<BinaryOperator>(I);
 
-                if (!binOp || binOp->getOpcode() != Instruction::Add) {
+                if (!bin_op ||
+                    bin_op->getOpcode() != Instruction::Add ||
+                    !(bin_op->getType()->isIntegerTy() && bin_op->getType()->getIntegerBitWidth() == 8)
+                ) {
                     continue;
                 }
 
-                if (!(binOp->getType()->isIntegerTy() && binOp->getType()->getIntegerBitWidth() == 8)) {
-                    continue;
-                }
-
-                Instruction *replacement = ReplaceInstruction(binOp);
-
-                ReplaceInstWithInst(BB.getInstList(), I, replacement);
+                ReplaceInstWithInst(BB.getInstList(), I, ReplacePass(bin_op));
                 changed = true;
             }
         }
@@ -50,12 +47,12 @@ struct ReplaceAdd : public FunctionPass {
     }
 };
 
-}  // namespace
+}
 
-char ReplaceAdd::ID = 0;
-static RegisterPass<ReplaceAdd> X(
-    "replace-int8-add",                                    /* Command line argument */
-    "Peephole Optimization Course Pass: Replace Int8 Add", /* Help string */
+char Int8ReplacePass::ID = 0;
+static RegisterPass<Int8ReplacePass> X(
+    "int8-replace-pass",                                    /* Command line argument */
+    "Peephole Optimization Course Pass: Replace Int8 Add Pass", /* Help string */
     false                                                   /* Changes the CFG */,
     false                                                   /* This is not the Analysis Pass */
 );
@@ -63,6 +60,6 @@ static RegisterPass<ReplaceAdd> X(
 static RegisterStandardPasses Y(
     PassManagerBuilder::EP_EarlyAsPossible,
     [](const PassManagerBuilder &Builder, legacy::PassManagerBase &PM) {
-        PM.add(new ReplaceAdd());
+        PM.add(new Int8ReplacePass());
     }
 );

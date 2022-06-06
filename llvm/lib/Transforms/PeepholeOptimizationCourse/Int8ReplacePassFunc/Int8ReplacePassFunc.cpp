@@ -1,4 +1,4 @@
-#include "llvm/Transforms/PeepholeOptimizationCourse/Functions.h"
+#include "llvm/Transforms/PeepholeOptimizationCourse/Int8ReplacePassFunc.h"
 
 #include "llvm/IR/Function.h"
 #include "llvm/IR/Constants.h"
@@ -9,13 +9,15 @@
 
 namespace llvm {
 
-Instruction* ReplaceInstruction(BinaryOperator* binOp) {
-                IRBuilder<> B(binOp);
-                auto const& lhs = binOp->getOperand(0);
-                auto const& rhs = binOp->getOperand(1);
-                auto const& i8 = binOp->getType();
+Instruction* ReplacePass(BinaryOperator* bin_op) {
+                
+                IRBuilder<> B(bin_op);
 
-                Instruction *replacement = BinaryOperator::CreateAdd(
+                auto const& lhs = bin_op->getOperand(0);
+                auto const& rhs = bin_op->getOperand(1);
+                auto const& i8 = bin_op->getType();
+
+                return BinaryOperator::CreateAdd(
                     B.CreateMul(
                         B.CreateMul(
                             ConstantInt::get(i8, 39),
@@ -33,9 +35,7 @@ Instruction* ReplaceInstruction(BinaryOperator* binOp) {
                         ConstantInt::get(i8, 151)
                     ),
                     ConstantInt::get(i8, 111)
-                );
-
-                return replacement;
+                );;
 }
 
 }
